@@ -1,5 +1,8 @@
+const express = require('express');
 const fs = require('fs');
 const { PDFDocument } = require('pdf-lib');
+
+const app = express();
 
 // Path to your template PDF
 const templatePdfPath = '/home/roel/Downloads/repaired.pdf';
@@ -10,38 +13,26 @@ const createReceiptsFromTemplate = async (receiptDataArray) => {
     const existingPdfBytes = fs.readFileSync(templatePdfPath);
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
-    // Create a form object
-    const form = pdfDoc.getForm();
-
-    // Get the size of the original template page (for debugging)
-    const templatePage = pdfDoc.getPages()[0];
-    const { width, height } = templatePage.getSize();
-    console.log(`Template Page Size: Width = ${width}, Height = ${height}`);
-
     // Start by processing the receipt data array
     for (let i = 0; i < receiptDataArray.length; i++) {
       console.log(`Processing receipt ${i + 1}...`);
-      
-      // For the first receipt, we don't copy the page. We just fill the existing template page.
+
+      // For the first receipt, we fill the existing template page
       if (i > 0) {
         // Copy the template page for subsequent receipts
         const [copiedPage] = await pdfDoc.copyPages(pdfDoc, [0]);
         pdfDoc.addPage(copiedPage);
       }
 
-      // Access the correct page where we will fill the form
-      const page = pdfDoc.getPages()[i]; // This ensures we're working with the correct page
-
-      // Log the page count and process form fields
-      console.log(`Page count for receipt ${i + 1}: ${pdfDoc.getPages().length}`);
-
+      // Access the correct form fields for the page
+      const form = pdfDoc.getForm();
       const customerNameField = form.getTextField('customerName');
       const billingMonthField = form.getTextField('billingMonth');
       const meterNumberField = form.getTextField('meterNumber');
       const costField = form.getTextField('cost');
       const totalField = form.getTextField('grandTotal');
 
-      // Fill the form fields for the current page
+      // Fill the form fields with the data for the current receipt
       customerNameField.setText(receiptDataArray[i].customerName);
       billingMonthField.setText(receiptDataArray[i].billingMonth);
       meterNumberField.setText(receiptDataArray[i].meterNumber);
@@ -56,15 +47,20 @@ const createReceiptsFromTemplate = async (receiptDataArray) => {
       console.log(`Grand Total: ${receiptDataArray[i].grandTotal}`);
     }
 
-    // Log the final number of pages before saving
-    console.log(`Final page count before saving PDF: ${pdfDoc.getPages().length}`);
+    // Crop each page to keep the bottom half (for the second receipt)
+    const pages = pdfDoc.getPages();
+    pages.forEach(page => {
+      const { width, height } = page.getSize();
+      // Correct cropping: keep the bottom half, remove the top half
+      page.setCropBox(0, height / 2, width, height / 2); // Crop the top half, keep the bottom
+    });
 
-    // Save the modified PDF to memory
+    // Save the modified PDF
     const pdfBytes = await pdfDoc.save();
 
-    // Write the final PDF to disk (or send it as a response if this is a web app)
+    // Write the final PDF to disk
     fs.writeFileSync('output_receipt.pdf', pdfBytes);
-    console.log('PDF created successfully with multiple pages!');
+    console.log('PDF created successfully with multiple pages, each cropped to keep the bottom half!');
   } catch (error) {
     console.error('Error generating PDF:', error);
   }
