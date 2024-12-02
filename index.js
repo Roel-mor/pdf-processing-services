@@ -76,26 +76,26 @@ app.post('/get-pdf', async (req, res) => {
         const form = pdfDoc.getForm();
 
         // Fill first receipt fields
-        form.getTextField('customerName1').setText(receiptDataArray[2 * i].customerName);
-        form.getTextField('billingMonth1').setText(receiptDataArray[2 * i].billingMonth);
-        form.getTextField('meterNumber1').setText(receiptDataArray[2 * i].meterNumber);
-        form.getTextField('currentReading1').setText(receiptDataArray[2 * i].currentReading);
-        form.getTextField('previousReading1').setText(receiptDataArray[2 * i].previousReading);
-        form.getTextField('gallonsConsumed1').setText(receiptDataArray[2 * i].gallonsConsumed);
-        form.getTextField('cost1').setText(formatCurrency(receiptDataArray[2 * i].cost));
-        form.getTextField('arrears1').setText(formatCurrency(receiptDataArray[2 * i].arrears));
-        form.getTextField('grandTotal1').setText(formatCurrency(receiptDataArray[2 * i].grandTotal));
+        form.getTextField('customerName1').setText(String(receiptDataArray[2 * i].customerName));
+        form.getTextField('billingMonth1').setText(String(receiptDataArray[2 * i].billingMonth));
+        form.getTextField('meterNumber1').setText(String(receiptDataArray[2 * i].meterNumber));
+        form.getTextField('currentReading1').setText(String(receiptDataArray[2 * i].currentReading));
+        form.getTextField('previousReading1').setText(String(receiptDataArray[2 * i].previousReading));
+        form.getTextField('gallonsConsumed1').setText(String(receiptDataArray[2 * i].gallonsConsumed));
+        form.getTextField('cost1').setText(formatCurrency(String(receiptDataArray[2 * i].cost)));
+        form.getTextField('arrears1').setText(formatCurrency(String(receiptDataArray[2 * i].arrears)));
+        form.getTextField('grandTotal1').setText(formatCurrency(String(receiptDataArray[2 * i].grandTotal)));
 
         // Fill second receipt fields
-        form.getTextField('customerName2').setText(receiptDataArray[2 * i + 1].customerName);
-        form.getTextField('billingMonth2').setText(receiptDataArray[2 * i + 1].billingMonth);
-        form.getTextField('meterNumber2').setText(receiptDataArray[2 * i + 1].meterNumber);
-        form.getTextField('currentReading2').setText(receiptDataArray[2 * i + 1].currentReading);
-        form.getTextField('previousReading2').setText(receiptDataArray[2 * i + 1].previousReading);
-        form.getTextField('gallonsConsumed2').setText(receiptDataArray[2 * i + 1].gallonsConsumed);
-        form.getTextField('cost2').setText(formatCurrency(receiptDataArray[2 * i + 1].cost));
-        form.getTextField('arrears2').setText(formatCurrency(receiptDataArray[2 * i + 1].arrears));
-        form.getTextField('grandTotal2').setText(formatCurrency(receiptDataArray[2 * i + 1].grandTotal));
+        form.getTextField('customerName2').setText(String(receiptDataArray[2 * i + 1].customerName));
+        form.getTextField('billingMonth2').setText(String(receiptDataArray[2 * i + 1].billingMonth));
+        form.getTextField('meterNumber2').setText(String(receiptDataArray[2 * i + 1].meterNumber));
+        form.getTextField('currentReading2').setText(String(receiptDataArray[2 * i + 1].currentReading));
+        form.getTextField('previousReading2').setText(String(receiptDataArray[2 * i + 1].previousReading));
+        form.getTextField('gallonsConsumed2').setText(String(receiptDataArray[2 * i + 1].gallonsConsumed));
+        form.getTextField('cost2').setText(formatCurrency(String(receiptDataArray[2 * i + 1].cost)));
+        form.getTextField('arrears2').setText(formatCurrency(String(receiptDataArray[2 * i + 1].arrears)));
+        form.getTextField('grandTotal2').setText(formatCurrency(String(receiptDataArray[2 * i + 1].grandTotal)));
 
         form.flatten();  // Flatten the form to make the fields uneditable
 
