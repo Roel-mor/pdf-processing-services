@@ -110,6 +110,7 @@ app.post('/get-pdf', async (req, res) => {
       const pdfBytes = await newPdfDoc.save();
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename="output_receipt.pdf"'); // Or 'inline' if you want to display it in the browser
+    console.log("Pdf Bytes:" , pdfBytes);
     res.send(pdfBytes);
       console.log('PDF created successfully with multiple pages!');
       return;
