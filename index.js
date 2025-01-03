@@ -1,3 +1,17 @@
+const fs = require('fs');
+const { PDFDocument } = require('pdf-lib');
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000; // Default to 3000 if no PORT environment variable is set
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// Handle GET requests at the root URL (http://localhost:3000/)
+app.get('/', (req, res) => {
+  res.send('Hello, world!');  // You can customize this response
+});
+
 // Sample POST route to receive the data
 app.post('/get-pdf', async (req, res) => {
   const receiptData = req.body;  // The incoming JSON data
@@ -94,20 +108,25 @@ app.post('/get-pdf', async (req, res) => {
 
       // Send the generated PDF to client
       const pdfBytes = await newPdfDoc.save();
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="output_receipt.pdf"'); // Or 'inline' if you want to display it in the browser
-      res.send(pdfBytes);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="output_receipt.pdf"'); // Or 'inline' if you want to display it in the browser
+    res.send(pdfBytes);
       console.log('PDF created successfully with multiple pages!');
       return;
 
     } catch (error) {
       console.error('Error generating PDF:', error);
-        res.status(500).json({ error: 'Failed to generate PDF' });
-       return;
+         res.status(500).json({ error: 'Failed to generate PDF' });
+         return;
     }
   };
 
   // Generate the PDF using the receipt data
   await createReceiptsFromTemplate(receiptDataArray);
 
+});
+
+// Start the Express server
+app.listen(port, () => {
+  console.log(`Server running at:${port}`);
 });
