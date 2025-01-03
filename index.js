@@ -14,10 +14,12 @@ app.get('/', (req, res) => {
 
 // Sample POST route to receive the data
 app.post('/get-pdf', async (req, res) => {
+    try{
   const receiptData = req.body;  // The incoming JSON data
-
+console.log("Data Received by Render: " + JSON.stringify(receiptData))
   // Validate the data format
   if (!receiptData || !Array.isArray(receiptData)) {
+      console.error("Incorrect Data Passed")
     return res.status(400).send('Invalid data format');
   }
 
@@ -108,12 +110,14 @@ app.post('/get-pdf', async (req, res) => {
 
       // Send the generated PDF to client
       const pdfBytes = await newPdfDoc.save();
-      res.type('application/pdf')
-      res.setHeader('Content-Disposition', 'attachment; filename="output_receipt.pdf"');
-    console.log("Pdf Bytes:" , pdfBytes);
-    console.log('Content-Type Header:', res.getHeader('Content-Type'));
+         console.log("Pdf Bytes:", pdfBytes)
+           console.log('Content-Type Header:', res.getHeader('Content-Type'));
     console.log('Content-Disposition Header:', res.getHeader('Content-Disposition'));
-    res.send(pdfBytes);
+    
+       res.setHeader('Content-Type', 'application/pdf');
+     res.setHeader('Content-Disposition', 'attachment; filename="output_receipt.pdf"');
+        res.end(pdfBytes);
+       
       console.log('PDF created successfully with multiple pages!');
       return;
 
@@ -126,6 +130,12 @@ app.post('/get-pdf', async (req, res) => {
 
   // Generate the PDF using the receipt data
   await createReceiptsFromTemplate(receiptDataArray);
+    }
+     catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).json({ error: 'Failed to generate PDF' });
+            return;
+    }
 
 });
 
